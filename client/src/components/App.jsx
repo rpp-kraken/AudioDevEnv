@@ -6,7 +6,6 @@ const App = () => {
 
   // state or active track tapped
 
-
   return (
     <div>
       <SoundCard/>
