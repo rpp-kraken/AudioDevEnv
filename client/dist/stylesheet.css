@@ -25,6 +25,8 @@
   border-radius: 50px;
   padding: 25;
   margin-left: 500;
+  font-size: 20px;
+
   background-color:rgb(100, 20, 220);
 }
 
@@ -36,6 +38,21 @@
 
 .font {
   font-family: "Rockwell", serif;
+}
+
+.hidden {
+  display: none;
+}
+
+.sidescroller {
+  position: relative;
+  display: grid;
+  gap: 1em;
+  grid-auto-flow: column;
+  grid-auto-columns: min-content;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  /* scroll-snap-type: inline mandatory; */
 }
 
 @-webkit-keyframes name {

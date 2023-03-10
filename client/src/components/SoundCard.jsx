@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
-import WaveformCanvas from './WaveformCanvas.jsx';
+// import WaveformCanvas from './WaveformCanvas.jsx';
 
 const SoundCard = (props) => {
 
@@ -9,18 +9,16 @@ const SoundCard = (props) => {
   const [tempoValue, setTempoValue] = useState(1);
   const [mute1prev, setMute1prev] = useState(0);
   const [isMuted1, setIsMuted1] = useState(false);
-  // const [player, setPlayer] = useState(null);
 
   useEffect(() => {
     console.log(`${props.trackUrl} CARD RENDER. Key = ${props.index}`);
     const player = new Tone.Player(props.trackUrl).connect(gainNode);
-    console.log("🚀 ~ file: SoundCard.jsx:17 ~ useEffect ~ player:", player)
-    // setPlayer(player);
+    // console.log("🚀 ~ file: SoundCard.jsx:17 ~ useEffect ~ player:", player)
     const key = props.index;
     const obj = {};
     obj[key] = player;
     handleFileChange(obj, tempoValue);
-  }, [sliderVolumeValue, sliderPitchValue,tempoValue,mute1prev,isMuted1]);
+  }, [sliderVolumeValue, sliderPitchValue, tempoValue, mute1prev, isMuted1]);
 
   const handleFileChange = (newsound, tempo) => {
     props.handleAddPlayer(newsound, tempo);
@@ -57,28 +55,14 @@ const SoundCard = (props) => {
   let effectPitch = new Tone.PitchShift(sliderPitchValue).toDestination();
   let gainNode = new Tone.Gain(sliderVolumeValue).connect(effectPitch);
 
-  const playSounds = () => {
-    console.log('CLICKED');
-
-    Tone.loaded().then(() => {
-      Tone.start();
-      Tone.Transport.start();
-      player.playbackRate = tempoValue;
-      // player2.playbackRate = 2;
-      player.start();
-      // player2.start();
-    });
-  }
-
   return (
+    // <div className={props.index + 1 === props.active ? null : "hidden"}>
     <div>
-      {/* <button className="outline-button-button" onClick={playSounds}>
-        Play Sound
-      </button> */}
+      <h4> FX: Sound {props.index + 1}</h4>
       <button className="outline-button-button" onClick={muteSound}>
         {isMuted1 ? 'Unmute' : 'Mute'}
       </button>
-      <WaveformCanvas trackUrl={props.trackUrl}/>
+      {/* <WaveformCanvas trackUrl={props.trackUrl}/> */}
       <div>
         <p>Volume Slider value: {sliderVolumeValue}</p>
         <input
@@ -112,8 +96,8 @@ const SoundCard = (props) => {
           onChange={handleChangeTempo}
         />
       </div>
-      <br/>
-      <br/>
+      <br />
+      <br />
     </div>
   )
 }

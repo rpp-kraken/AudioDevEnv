@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
 import SoundCard from './SoundCard.jsx';
+import WaveformCanvas from './WaveformCanvas.jsx';
+
 
 const ProjectView = () => {
 
   const [listOfTracks, setListOfTracks] = useState([]);
-  // const [listPlayers, setListPlayers] = useState([]);
+  // const [activeSoundCard, setActiveSoundCard] = useState(1);
 
   // TODO: state or active track tapped
 
   useEffect(() => {
-    console.log('first render!');
+    console.log('first render!',);
 
-    // Uncomment for more than one track
+    // Uncomment for multiple tracks
     let trackUrlSources = [
       // 'https://s3-us-west-1.amazonaws.com/leesamples/samples/Rhythmics/60+bpm/Ping+Pong+Ping.mp3',
       // 'https://dl.dropboxusercontent.com/s/w303ydczmgrkfh8/New%20Recording%2075.m4a?dl=0',
@@ -25,16 +27,12 @@ const ProjectView = () => {
     setListOfTracks(trackUrlSources);
   }, []);
 
-
   const listPlayers = {};
 
   const handleAddPlayer = (player, tempoValue) => {
-    // setListPlayers([...listPlayers, player]);
     const key = Object.keys(player);
-    console.log("🚀 ~ file: ProjectView.jsx:34 ~ handleAddPlayer ~ key:", key[0])
     player[key]["transpose"] = tempoValue;
     listPlayers[key[0]] = player[key];
-    // listPlayers.push(player);
     console.log('adding player to multiplayer...', listPlayers);
   };
 
@@ -48,41 +46,43 @@ const ProjectView = () => {
         const playerEach = listPlayers[key];
         playerEach.start();
         playerEach.playbackRate = playerEach["transpose"];
-
       }
 
-      // const master = new Tone.Gain().toMaster();
-      // players.forEach((player) => {
-      //   player.connect(master);
-      //   player.start();
-      // });
-
-      // listPlayers.forEach((playerEach) => {
-      //   playerEach.connect(master);
-      //   playerEach.start();
-      // });
-
-      // listPlayers.forEach((playerEach) => {
-      //   playerEach.start();
-      // });
-      // player.playbackRate = tempoValue;
-      // player2.playbackRate = 2;
-      // player.start();
-      // player2.start();
     });
-
-
   };
 
+  // const handleClickActive = (activeCard) => {
+  //   console.log("HandleClickActive ~ activeCard: ", activeCard)
+  //   setActiveSoundCard(activeCard);
+  // }
 
   return (
 
     <div>
       <h4 className="smalltitle">SoundCrate Audio Test - Project View</h4>
       <button className="outline-button-button" onClick={handlePlayAll}>
-        Play All Sounds
-      </button>
-      {listOfTracks.map((urlTrack, i) => { return <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} /> })}
+        Play All Sounds with FX from Tone.JS
+      </button><br />
+      {/* <h4>Active Soundcard is... {activeSoundCard} </h4> */}
+      <br />
+      {/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i} handleClickActive={handleClickActive} /> })} */}
+      {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i}/> })}
+
+      <div className="sidescroller">
+        {listOfTracks.map((urlTrack, i) => { return <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} /> })}
+      </div>
+      {/* I was trying to figure out how to hide the non-active SoundCards... */}
+
+      {/* {listOfTracks.map((urlTrack, i) => { if (i === activeSoundCard - 1) return <SoundCard trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })}
+      {listOfTracks.map((urlTrack, i) => { if (i !== activeSoundCard - 1) return <SoundCard className="hidden" trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })} */}
+      {/*
+      {listOfTracks.map((urlTrack, i) => { (
+        i === activeSoundCard - 1
+        ? <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} />
+        : <SoundCard trackUrl={urlTrack} className="hidden" index={i} key={i} handleAddPlayer={handleAddPlayer} />
+        )})}
+         */}
+
     </div>
 
   );
