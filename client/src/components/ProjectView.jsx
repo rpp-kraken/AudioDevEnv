@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
 import SoundCard from './SoundCard.jsx';
 import WaveformCanvas from './WaveformCanvas.jsx';
+import AudioWaveform from './AudioWaveform.jsx'
 
 
 const ProjectView = () => {
@@ -51,10 +52,6 @@ const ProjectView = () => {
     });
   };
 
-  // const handleClickActive = (activeCard) => {
-  //   console.log("HandleClickActive ~ activeCard: ", activeCard)
-  //   setActiveSoundCard(activeCard);
-  // }
 
   return (
 
@@ -63,29 +60,34 @@ const ProjectView = () => {
       <button className="outline-button-button" onClick={handlePlayAll}>
         Play All Sounds with FX from Tone.JS
       </button><br />
-      {/* <h4>Active Soundcard is... {activeSoundCard} </h4> */}
       <br />
-      {/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i} handleClickActive={handleClickActive} /> })} */}
-      {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i}/> })}
-
+      {/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i}/> })} */}
+      {listOfTracks.map((urlTrack, i) => { return <AudioWaveform trackUrl={urlTrack} index={i} key={i}/> })}
       <div className="sidescroller">
         {listOfTracks.map((urlTrack, i) => { return <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} /> })}
       </div>
-      {/* I was trying to figure out how to hide the non-active SoundCards... */}
-
-      {/* {listOfTracks.map((urlTrack, i) => { if (i === activeSoundCard - 1) return <SoundCard trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })}
-      {listOfTracks.map((urlTrack, i) => { if (i !== activeSoundCard - 1) return <SoundCard className="hidden" trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })} */}
-      {/*
-      {listOfTracks.map((urlTrack, i) => { (
-        i === activeSoundCard - 1
-        ? <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} />
-        : <SoundCard trackUrl={urlTrack} className="hidden" index={i} key={i} handleAddPlayer={handleAddPlayer} />
-        )})}
-         */}
-
     </div>
 
-  );
+);
 }
 
 export default ProjectView;
+
+//Richard Notes
+{/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i} handleClickActive={handleClickActive} /> })} */}
+{/* <h4>Active Soundcard is... {activeSoundCard} </h4> */}
+{/* I was trying to figure out how to hide the non-active SoundCards... */}
+
+{/* {listOfTracks.map((urlTrack, i) => { if (i === activeSoundCard - 1) return <SoundCard trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })}
+{listOfTracks.map((urlTrack, i) => { if (i !== activeSoundCard - 1) return <SoundCard className="hidden" trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })} */}
+{/*
+{listOfTracks.map((urlTrack, i) => { (
+  i === activeSoundCard - 1
+  ? <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} />
+  : <SoundCard trackUrl={urlTrack} className="hidden" index={i} key={i} handleAddPlayer={handleAddPlayer} />
+  )})}
+*/}
+// const handleClickActive = (activeCard) => {
+//   console.log("HandleClickActive ~ activeCard: ", activeCard)
+//   setActiveSoundCard(activeCard);
+// }
