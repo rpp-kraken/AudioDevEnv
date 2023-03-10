@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import App from './components/App.jsx';
+import ProjectView from './components/ProjectView.jsx';
 
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(<ProjectView />, document.getElementById('app'));

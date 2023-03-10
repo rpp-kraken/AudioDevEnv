@@ -9,11 +9,22 @@ const SoundCard = (props) => {
   const [tempoValue, setTempoValue] = useState(1);
   const [mute1prev, setMute1prev] = useState(0);
   const [isMuted1, setIsMuted1] = useState(false);
+  // const [player, setPlayer] = useState(null);
 
   useEffect(() => {
-    console.log(`${props.trackUrl} CARD RENDER`);
+    console.log(`${props.trackUrl} CARD RENDER. Key = ${props.index}`);
+    const player = new Tone.Player(props.trackUrl).connect(gainNode);
+    console.log("🚀 ~ file: SoundCard.jsx:17 ~ useEffect ~ player:", player)
+    // setPlayer(player);
+    const key = props.index;
+    const obj = {};
+    obj[key] = player;
+    handleFileChange(obj, tempoValue);
+  }, [sliderVolumeValue, sliderPitchValue,tempoValue,mute1prev,isMuted1]);
 
-  });
+  const handleFileChange = (newsound, tempo) => {
+    props.handleAddPlayer(newsound, tempo);
+  };
 
   const handleChangeVolume = (event) => {
     event.preventDefault();
@@ -32,17 +43,12 @@ const SoundCard = (props) => {
 
   const muteSound = () => {
     setIsMuted1(!isMuted1);
-
     if (isMuted1) {
-
       console.log('unmuting Track');
       setSliderVolume(mute1prev);
-
     } else {
-
       setMute1prev(sliderVolumeValue);
       console.log('Muting Track');
-
       setSliderVolume(0);
     }
   }
@@ -51,36 +57,26 @@ const SoundCard = (props) => {
   let effectPitch = new Tone.PitchShift(sliderPitchValue).toDestination();
   let gainNode = new Tone.Gain(sliderVolumeValue).connect(effectPitch);
 
-  // Random FX
-  // let effectDelay = new Tone.FeedbackDelay(0.5, 0.5).connect(effectPitch);
-  // effect4 = new Tone.Freeverb().toDestination();
-  // effect2 = new Tone.Tremolo(4, 0.6).connect(effect3);
-  // effect1 = new Tone.FedbackDelay(0.5, 0.5).connect(effect2);
-
-  //
-
-  const player1 = new Tone.Player(props.trackUrl).connect(gainNode);
-
   const playSounds = () => {
     console.log('CLICKED');
 
     Tone.loaded().then(() => {
       Tone.start();
       Tone.Transport.start();
-      player1.playbackRate = tempoValue;
+      player.playbackRate = tempoValue;
       // player2.playbackRate = 2;
-      player1.start();
+      player.start();
       // player2.start();
     });
   }
 
   return (
     <div>
-      <button className="outline-button-button" onClick={playSounds}>
+      {/* <button className="outline-button-button" onClick={playSounds}>
         Play Sound
-      </button>
+      </button> */}
       <button className="outline-button-button" onClick={muteSound}>
-        {isMuted1 ? 'Unmute Sound 1' : 'Mute'}
+        {isMuted1 ? 'Unmute' : 'Mute'}
       </button>
       <WaveformCanvas trackUrl={props.trackUrl}/>
       <div>
@@ -120,7 +116,6 @@ const SoundCard = (props) => {
       <br/>
     </div>
   )
-
 }
 
 export default SoundCard;
