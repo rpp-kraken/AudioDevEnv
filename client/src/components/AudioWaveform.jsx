@@ -143,7 +143,7 @@ const AudioWaveform = (props) => {
 				const new_buffer = wavesurferObj.backend.ac.createBuffer(
 					original_buffer.numberOfChannels,
 					original_buffer.length,
-					original_buffer.sampleRate
+					original_buffer.sampleRate`	`
 				);
 
 				// create 2 indices:
@@ -203,7 +203,7 @@ const AudioWaveform = (props) => {
 			<div ref={timelineRef} id='wave-timeline' />
 			<div className='all-controls'>
 				<div className='left-container'>
-					{/* <button
+					<button
 						title='play/pause'
 						className='controls'
 						onClick={handlePlayPause}>
@@ -212,7 +212,7 @@ const AudioWaveform = (props) => {
 						) : (
 							<i className='material-icons'>play_arrow</i>
 						)}
-					</button> */}
+					</button>
 					{/* <button
 						title='reload'
 						className='controls'
