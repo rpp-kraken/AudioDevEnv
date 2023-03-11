@@ -27,7 +27,7 @@ const AudioWaveform = (props) => {
 			setWavesurferObj(
 				wavesurfer.create({
 					container: '#waveform',
-					scrollParent: true,
+					// scrollParent: true,
 					autoCenter: true,
 					cursorColor: 'violet',
 					loopSelection: true,

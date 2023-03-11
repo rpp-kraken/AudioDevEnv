@@ -8,6 +8,12 @@ import AudioWaveform from './AudioWaveform.jsx'
 const ProjectView = () => {
 
   const [listOfTracks, setListOfTracks] = useState([]);
+  const [listPlayers, setListPlayers] = useState({});
+
+
+  const [maxTracks, setMax] = useState(1);
+  const [underMax, setUnderMax] = useState(true);
+
   // const [activeSoundCard, setActiveSoundCard] = useState(1);
 
   // TODO: state or active track tapped
@@ -20,20 +26,38 @@ const ProjectView = () => {
       // 'https://s3-us-west-1.amazonaws.com/leesamples/samples/Rhythmics/60+bpm/Ping+Pong+Ping.mp3',
       // 'https://dl.dropboxusercontent.com/s/w303ydczmgrkfh8/New%20Recording%2075.m4a?dl=0',
       // 'https://tonejs.github.io/audio/berklee/gong_1.mp3',
-      'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
+      // 'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
       'https://dl.dropboxusercontent.com/s/c9aome2s0wr4ym7/Cymatics%20-%2021%20Inch%20Ride%20-%20Velocity%204.wav?dl=0',
-      'https://dl.dropboxusercontent.com/s/3e7cinfd5ib9u5d/one%20two.m4a?dl=0'
+      // 'https://dl.dropboxusercontent.com/s/3e7cinfd5ib9u5d/one%20two.m4a?dl=0'
     ];
 
     setListOfTracks(trackUrlSources);
   }, []);
 
-  const listPlayers = {};
+  const listPlayersObj = {};
+
+  const handleUploadAudio = (event) => {
+    const uploadedFile = event.target.files[0];
+    setListOfTracks(prevList => [...prevList, URL.createObjectURL(uploadedFile)]);
+    if (maxTracks <= 3) {
+      console.log(maxTracks);
+      setMax(maxTracks + 1);
+      if (maxTracks >= 2) {
+        setUnderMax(false);
+      }
+    }
+  };
 
   const handleAddPlayer = (player, tempoValue) => {
     const key = Object.keys(player);
     player[key]["transpose"] = tempoValue;
-    listPlayers[key[0]] = player[key];
+    listPlayersObj[key[0]] = player[key];
+
+    setListPlayers(prevState => ({
+      ...prevState,
+      ...listPlayersObj
+    }));
+
     console.log('adding player to multiplayer...', listPlayers);
   };
 
@@ -62,21 +86,24 @@ const ProjectView = () => {
       </button><br />
       <br />
       {/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i}/> })} */}
-      {listOfTracks.map((urlTrack, i) => { return <AudioWaveform trackUrl={urlTrack} index={i} key={i}/> })}
+      {listOfTracks.map((urlTrack, i) => { return <AudioWaveform trackUrl={urlTrack} index={i} key={i} /> })}
       <div className="sidescroller">
         {listOfTracks.map((urlTrack, i) => { return <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} /> })}
       </div>
+      <form>
+        {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
+      </form>
     </div>
 
-);
+  );
 }
 
 export default ProjectView;
 
 //Richard Notes
-{/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i} handleClickActive={handleClickActive} /> })} */}
-{/* <h4>Active Soundcard is... {activeSoundCard} </h4> */}
-{/* I was trying to figure out how to hide the non-active SoundCards... */}
+{/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i} handleClickActive={handleClickActive} /> })} */ }
+{/* <h4>Active Soundcard is... {activeSoundCard} </h4> */ }
+{/* I was trying to figure out how to hide the non-active SoundCards... */ }
 
 {/* {listOfTracks.map((urlTrack, i) => { if (i === activeSoundCard - 1) return <SoundCard trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })}
 {listOfTracks.map((urlTrack, i) => { if (i !== activeSoundCard - 1) return <SoundCard className="hidden" trackUrl={urlTrack} index={i} key={i} active={i === activeSoundCard} handleAddPlayer={handleAddPlayer} /> })} */}
