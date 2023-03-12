@@ -27,19 +27,19 @@ const AudioWaveform = (props) => {
 			setWavesurferObj(
 				wavesurfer.create({
 					container: '#waveform',
-					scrollParent: true,
+					// scrollParent: true,
 					autoCenter: true,
 					cursorColor: 'violet',
 					loopSelection: true,
 					waveColor: '#211027',
 					progressColor: '#69207F',
 					responsive: true,
-					plugins: [
-						TimelinePlugin.create({
-							container: '#wave-timeline',
-						}),
-						RegionsPlugin.create({}),
-					],
+					// plugins: [
+					// 	TimelinePlugin.create({
+					// 		container: '#wave-timeline',
+					// 	}),
+					// RegionsPlugin.create({}),
+					// ],
 				})
 			);
 		}
@@ -129,7 +129,7 @@ const AudioWaveform = (props) => {
 			// get start and end points of the selected region
 			const region =
 				wavesurferObj.regions.list[
-					Object.keys(wavesurferObj.regions.list)[0]
+				Object.keys(wavesurferObj.regions.list)[0]
 				];
 
 			if (region) {
@@ -143,7 +143,7 @@ const AudioWaveform = (props) => {
 				const new_buffer = wavesurferObj.backend.ac.createBuffer(
 					original_buffer.numberOfChannels,
 					original_buffer.length,
-					original_buffer.sampleRate
+					original_buffer.sampleRate`	`
 				);
 
 				// create 2 indices:
@@ -199,20 +199,20 @@ const AudioWaveform = (props) => {
 
 	return (
 		<section className='waveform-container'>
+			{/* <button
+				title='play/pause'
+				className='controls'
+				onClick={handlePlayPause}>
+				{playing ? (
+					<i className='material-icons'>pause</i>
+				) : (
+					<i className='material-icons'>play_arrow</i>
+				)}
+			</button> */}
 			<div ref={wavesurferRef} id='waveform' />
 			<div ref={timelineRef} id='wave-timeline' />
 			<div className='all-controls'>
 				<div className='left-container'>
-					{/* <button
-						title='play/pause'
-						className='controls'
-						onClick={handlePlayPause}>
-						{playing ? (
-							<i className='material-icons'>pause</i>
-						) : (
-							<i className='material-icons'>play_arrow</i>
-						)}
-					</button> */}
 					{/* <button
 						title='reload'
 						className='controls'
