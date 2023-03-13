@@ -3,6 +3,8 @@ import * as Tone from 'tone';
 import SoundCard from './SoundCard.jsx';
 import WaveformCanvas from './WaveformCanvas.jsx';
 import AudioWaveform from './AudioWaveform.jsx'
+import { MicrophoneRecorder } from './MicRecord.jsx';
+
 
 const ProjectView = () => {
 
@@ -23,10 +25,10 @@ const ProjectView = () => {
       // 'https://s3-us-west-1.amazonaws.com/leesamples/samples/Rhythmics/60+bpm/Ping+Pong+Ping.mp3',
       // 'https://dl.dropboxusercontent.com/s/w303ydczmgrkfh8/New%20Recording%2075.m4a?dl=0',
       // 'https://tonejs.github.io/audio/berklee/gong_1.mp3',
-      'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
+      // 'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
       // 'https://dl.dropboxusercontent.com/s/c9aome2s0wr4ym7/Cymatics%20-%2021%20Inch%20Ride%20-%20Velocity%204.wav?dl=0',
       // 'https://dl.dropboxusercontent.com/s/3e7cinfd5ib9u5d/one%20two.m4a?dl=0',
-      'https://dl.dropboxusercontent.com/s/d539eig06ioc35s/one%20two.webm?dl=0'
+      'https://dl.dropboxusercontent.com/s/d539eig06ioc35s/one%20two.webm?dl=0',
     ];
 
     setListOfTracks(trackUrlSources);
@@ -34,17 +36,29 @@ const ProjectView = () => {
 
   const listPlayersObj = {};
 
-  const handleUploadAudio = (event) => {
-    const uploadedFile = event.target.files[0];
-    setListOfTracks(prevList => [...prevList, URL.createObjectURL(uploadedFile)]);
-    if (maxTracks <= 3) {
-      console.log(maxTracks);
-      setMax(maxTracks + 1);
-      if (maxTracks >= 2) {
-        setUnderMax(false);
+
+  function handleUploadAudio(event) {
+    const file = event.target.files[0];
+    const audio = new Audio();
+    audio.src = URL.createObjectURL(file);
+    audio.onloadedmetadata = function() {
+      const duration = audio.duration;
+      if (duration > 30) {
+        alert('Audio file must be no longer than 30 seconds.');
+        return;
+      } else {
+        setListOfTracks(prevList => [...prevList, URL.createObjectURL(file)]);
+        if (maxTracks <= 3) {
+          console.log(maxTracks);
+          setMax(maxTracks + 1);
+          if (maxTracks >= 2) {
+            setUnderMax(false);
+          }
+        };
       }
-    }
-  };
+      // Handle the valid audio file here
+    };
+  }
 
   const handleAddPlayer = (player, tempoValue) => {
     const key = Object.keys(player);
@@ -148,6 +162,7 @@ const ProjectView = () => {
       <form>
         {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
       </form>
+      <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax}/>
     </div>
 
   );
