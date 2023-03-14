@@ -10,6 +10,7 @@ const ProjectView = () => {
 
   const [listOfTracks, setListOfTracks] = useState([]);
   const [listPlayers, setListPlayers] = useState({});
+  // const [maxDuration, setMaxDuration] = useState(0);
 
   const [maxTracks, setMax] = useState(1);
   const [underMax, setUnderMax] = useState(true);
@@ -96,6 +97,8 @@ const ProjectView = () => {
   const handleRecordRender = () => {
     console.log('Render ALL tracks into Song');
 
+    var maxDuration = 0;
+
     Tone.loaded().then(() => {
 
       // Create a Gain node to use as the output destination
@@ -115,6 +118,14 @@ const ProjectView = () => {
         const playerEach = listPlayers[key];
         playerEach.start(); // Deleting this stops all sound
         playerEach.playbackRate = playerEach["transpose"];
+
+        const durationMilliseconds = Math.round(playerEach.buffer.duration * 1000 / playerEach["transpose"]);
+        if (durationMilliseconds > maxDuration) {
+          maxDuration = durationMilliseconds;
+
+          console.log("set max duration: ", maxDuration);
+        }
+
       }
 
       setTimeout(async () => {
@@ -133,26 +144,23 @@ const ProjectView = () => {
         // convert the blob to an AudioBuffer
         const audioContext = new AudioContext();
         const audioBuffer = await audioContext.decodeAudioData(buffer);
-        console.log("🚀 ~ file: ProjectView.jsx:152 ~ setTimeout ~ audioBuffer:", audioBuffer)
 
         const wavData = audioBufferToWav(audioBuffer);
-        console.log("🚀 ~ file: ProjectView.jsx:155 ~ setTimeout ~ wavData:", wavData)
 
         // Create a Blob from the WAV data
         const blob = new Blob([new DataView(wavData)], { type: 'audio/wav' });
-        console.log("🚀 ~ file: ProjectView.jsx:159 ~ setTimeout ~ blob:", blob)
 
         // Create a URL for the Blob
         const url = URL.createObjectURL(blob);
 
-        // Create an anchor tag and set its attributes
+        // Create an anchor tag and allows for download of wav right now
         const anchor = document.createElement('a');
         anchor.setAttribute('href', url);
         anchor.setAttribute('download', 'audio.wav');
         anchor.click();
 
 
-      }, 3000);
+      }, maxDuration);
     });
   };
 
