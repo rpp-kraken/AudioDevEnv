@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
+import audioBufferToWav from 'audiobuffer-to-wav';
 import SoundCard from './SoundCard.jsx';
 import WaveformCanvas from './WaveformCanvas.jsx';
 import AudioWaveform from './AudioWaveform.jsx'
 import { MicrophoneRecorder } from './MicRecord.jsx';
-
 
 const ProjectView = () => {
 
@@ -25,7 +25,7 @@ const ProjectView = () => {
       // 'https://s3-us-west-1.amazonaws.com/leesamples/samples/Rhythmics/60+bpm/Ping+Pong+Ping.mp3',
       // 'https://dl.dropboxusercontent.com/s/w303ydczmgrkfh8/New%20Recording%2075.m4a?dl=0',
       // 'https://tonejs.github.io/audio/berklee/gong_1.mp3',
-      // 'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
+      'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
       // 'https://dl.dropboxusercontent.com/s/c9aome2s0wr4ym7/Cymatics%20-%2021%20Inch%20Ride%20-%20Velocity%204.wav?dl=0',
       // 'https://dl.dropboxusercontent.com/s/3e7cinfd5ib9u5d/one%20two.m4a?dl=0',
       'https://dl.dropboxusercontent.com/s/d539eig06ioc35s/one%20two.webm?dl=0',
@@ -41,7 +41,7 @@ const ProjectView = () => {
     const file = event.target.files[0];
     const audio = new Audio();
     audio.src = URL.createObjectURL(file);
-    audio.onloadedmetadata = function() {
+    audio.onloadedmetadata = function () {
       const duration = audio.duration;
       if (duration > 30) {
         alert('Audio file must be no longer than 30 seconds.');
@@ -127,13 +127,32 @@ const ProjectView = () => {
         //   playerEach.disconnect();
         // }
 
-        // download the recording by creating an anchor element and blob url
-        const url = URL.createObjectURL(recording);
-        const anchor = document.createElement("a");
-        anchor.download = "recording.webm";
-        anchor.href = url;
+        // convert the blob to a Buffer
+        const buffer = await recording.arrayBuffer();
+
+        // convert the blob to an AudioBuffer
+        const audioContext = new AudioContext();
+        const audioBuffer = await audioContext.decodeAudioData(buffer);
+        console.log("🚀 ~ file: ProjectView.jsx:152 ~ setTimeout ~ audioBuffer:", audioBuffer)
+
+        const wavData = audioBufferToWav(audioBuffer);
+        console.log("🚀 ~ file: ProjectView.jsx:155 ~ setTimeout ~ wavData:", wavData)
+
+        // Create a Blob from the WAV data
+        const blob = new Blob([new DataView(wavData)], { type: 'audio/wav' });
+        console.log("🚀 ~ file: ProjectView.jsx:159 ~ setTimeout ~ blob:", blob)
+
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
+
+        // Create an anchor tag and set its attributes
+        const anchor = document.createElement('a');
+        anchor.setAttribute('href', url);
+        anchor.setAttribute('download', 'audio.wav');
         anchor.click();
-      }, 4000);
+
+
+      }, 3000);
     });
   };
 
@@ -162,7 +181,7 @@ const ProjectView = () => {
       <form>
         {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
       </form>
-      <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax}/>
+      <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax} />
     </div>
 
   );
