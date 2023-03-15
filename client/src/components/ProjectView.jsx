@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
 import audioBufferToWav from 'audiobuffer-to-wav';
-import SoundCard from './SoundCard.jsx';
+import FXPanel from './FXPanel.jsx';
 import WaveformCanvas from './WaveformCanvas.jsx';
 import AudioWaveform from './AudioWaveform.jsx'
 import { MicrophoneRecorder } from './MicRecord.jsx';
@@ -12,7 +12,7 @@ const ProjectView = () => {
   const [listPlayers, setListPlayers] = useState({});
   // const [maxDuration, setMaxDuration] = useState(0);
 
-  const [maxTracks, setMax] = useState(1);
+  const [maxTracks, setMax] = useState(0);
   const [underMax, setUnderMax] = useState(true);
 
   // const [activeSoundCard, setActiveSoundCard] = useState(1);
@@ -26,17 +26,26 @@ const ProjectView = () => {
       // 'https://s3-us-west-1.amazonaws.com/leesamples/samples/Rhythmics/60+bpm/Ping+Pong+Ping.mp3',
       // 'https://dl.dropboxusercontent.com/s/w303ydczmgrkfh8/New%20Recording%2075.m4a?dl=0',
       // 'https://tonejs.github.io/audio/berklee/gong_1.mp3',
-      'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
+      // 'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
       // 'https://dl.dropboxusercontent.com/s/c9aome2s0wr4ym7/Cymatics%20-%2021%20Inch%20Ride%20-%20Velocity%204.wav?dl=0',
       // 'https://dl.dropboxusercontent.com/s/3e7cinfd5ib9u5d/one%20two.m4a?dl=0',
-      'https://dl.dropboxusercontent.com/s/d539eig06ioc35s/one%20two.webm?dl=0',
+      // 'https://dl.dropboxusercontent.com/s/d539eig06ioc35s/one%20two.webm?dl=0',
     ];
 
+    setMax(trackUrlSources.length);
     setListOfTracks(trackUrlSources);
   }, []);
 
-  const listPlayersObj = {};
+  useEffect(() => {
+    if (maxTracks < 3) {
+      setUnderMax(true);
+    } else {
+      setUnderMax(false);
+    };
 
+  }, [maxTracks]);
+
+  const listPlayersObj = {};
 
   function handleUploadAudio(event) {
     const file = event.target.files[0];
@@ -71,6 +80,13 @@ const ProjectView = () => {
       ...listPlayersObj
     }));
     // console.log('adding player to multiplayer...', listPlayers);
+  };
+
+  const handleDelete = (index) => {
+    setListPlayers({});
+    setListOfTracks([]);
+    setUnderMax(true);
+    setMax(0);
   };
 
   const handlePlayAll = () => {
@@ -174,22 +190,26 @@ const ProjectView = () => {
       <button className="outline-button-button" onClick={handleRecordRender}>
         Render and download song
       </button>
-      <h4 className="smalltitle">
-        ## See the Rendered Song by Uploading the downloaded .webm file
-      </h4>
       <br />
       {/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i}/> })} */}
       {listOfTracks.map((urlTrack, i) => { return <AudioWaveform trackUrl={urlTrack} index={i} key={i} /> })}
       <div className="sidescroller">
-        {listOfTracks.map((urlTrack, i) => { return <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} /> })}
+        {listOfTracks.map((urlTrack, i) => { return <FXPanel trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} handleDelete={handleDelete} /> })}
       </div>
       <h4 className="smalltitle">
-        ## Upload File
+        Upload File
       </h4>
       <form>
         {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
       </form>
-      <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax} />
+      <h4 className="smalltitle">
+        Record Audio
+      </h4>
+      {underMax && <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax} />}
+      <br /><br />
+      <button className="outline-button-button" onClick={handleDelete}>
+        Delete All Tracks
+      </button>
     </div>
 
   );
