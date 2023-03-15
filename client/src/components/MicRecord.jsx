@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import getBlobDuration from 'get-blob-duration';
 
 export const MicrophoneRecorder = (props) => {
   const [recording, setRecording] = useState(false);
@@ -18,15 +19,24 @@ export const MicrophoneRecorder = (props) => {
       mediaRecorderRef.current.addEventListener('stop', () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/' });
         setAudioBlob(audioBlob)
-        props.setListOfTracks(prevList => [...prevList, URL.createObjectURL(audioBlob)]);
-        // console.log(audioBlob);
-        if (props.maxTracks <= 3) {
-          // console.log(props.maxTracks);
-          props.setMax(props.maxTracks + 1);
-          if (props.maxTracks >= 2) {
-            props.setUnderMax(false);
+        getBlobDuration(audioBlob).then(function (duration) {
+          console.log(duration + ' seconds');
+          if (duration * 1000 < 30000) {
+            props.setListOfTracks(prevList => [...prevList, URL.createObjectURL(audioBlob)]);
+            console.log(props.maxTracks)
+            props.setMax(props.maxTracks + 1);
+            console.log(props.maxTracks)
+            // if (props.maxTracks >= 2) {
+            if (props.maxTracks < 3) {
+              props.setUnderMax(true);
+              console.log(props.setUnderMax)
+            } else {
+              props.setUnderMax(false);
+            };
+          } else {
+            alert(`'Your recording is ${duration*1000} seconds. Please record less than 30 seconds.'`);
           }
-        };
+        })
       });
 
       mediaRecorderRef.current.start();

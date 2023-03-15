@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
 // import WaveformCanvas from './WaveformCanvas.jsx';
 
-const SoundCard = (props) => {
+const FXPanel = (props) => {
 
   const [sliderVolumeValue, setSliderVolume] = useState(1);
   const [sliderPitchValue, setSliderValue] = useState(0);
@@ -39,6 +39,10 @@ const SoundCard = (props) => {
     setTempoValue(event.target.value);
   };
 
+  // const onClickDelete = (index) => {
+  //   props.handleDelete(props.index);
+  // };
+
   const muteSound = () => {
     setIsMuted1(!isMuted1);
     if (isMuted1) {
@@ -62,7 +66,9 @@ const SoundCard = (props) => {
       <button className="outline-button-button" onClick={muteSound}>
         {isMuted1 ? 'Unmute' : 'Mute'}
       </button>
-      {/* <WaveformCanvas trackUrl={props.trackUrl}/> */}
+      {/* <button className="outline-button-button" onClick={onClickDelete}>
+        Delete Track
+      </button> */}
       <div>
         <p>Volume Slider value: {sliderVolumeValue}</p>
         <input
@@ -102,4 +108,4 @@ const SoundCard = (props) => {
   )
 }
 
-export default SoundCard;
+export default FXPanel;
