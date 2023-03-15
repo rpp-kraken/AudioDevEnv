@@ -32,7 +32,7 @@ const ProjectView = () => {
     ];
 
     setListOfTracks(trackUrlSources);
-  }, []);
+  }, [handleDelete]);
 
   const listPlayersObj = {};
 
@@ -56,9 +56,24 @@ const ProjectView = () => {
           }
         };
       }
-      // Handle the valid audio file here
     };
   }
+
+
+  const handleDelete = (index) => {
+    const trackList = [...listOfTracks];
+    trackList.splice(index, 1);
+    setListOfTracks(trackList);
+    setUnderMax(true);
+    setMax(maxTracks-1);
+  };
+
+  useEffect(() => {
+  },[underMax])
+
+    useEffect(() => {
+    console.log('listOfTracks has been updated!',);
+  }, [listOfTracks]);
 
   const handleAddPlayer = (player, tempoValue) => {
     const key = Object.keys(player);
@@ -91,7 +106,6 @@ const ProjectView = () => {
       }
     });
   };
-
 
   const handleRecordRender = () => {
     console.log('Render ALL tracks into Song');
@@ -152,17 +166,30 @@ const ProjectView = () => {
       </h4>
       <br />
       {/* {listOfTracks.map((urlTrack, i) => { return <WaveformCanvas trackUrl={urlTrack} index={i} key={i}/> })} */}
-      {listOfTracks.map((urlTrack, i) => { return <AudioWaveform trackUrl={urlTrack} index={i} key={i} /> })}
-      <div className="sidescroller">
-        {listOfTracks.map((urlTrack, i) => { return <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} /> })}
+      <div>
+      {listOfTracks.map((urlTrack, i) => (
+        <div>
+          <div>
+          <AudioWaveform trackUrl={urlTrack} index={i} />
+          <button onClick={()=>handleDelete(i)}  >delete track</button>
+          </div>
+          <div>
+          <SoundCard trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax} listOfTracks={listOfTracks}/>
+          </div>
+        </div>
+      ))}
       </div>
       <h4 className="smalltitle">
         ## Upload File
       </h4>
-      <form>
-        {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
-      </form>
-      <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax}/>
+      <div>
+        <form>
+          {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
+        </form>
+        <div>
+        <MicrophoneRecorder setListOfTracks={setListOfTracks} listOfTracks={listOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax}/>
+        </div>
+      </div>
     </div>
 
   );
