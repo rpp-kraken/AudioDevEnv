@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
+import audioBufferToWav from 'audiobuffer-to-wav';
 import SoundCard from './SoundCard.jsx';
 import WaveformCanvas from './WaveformCanvas.jsx';
 import AudioWaveform from './AudioWaveform.jsx'
 import { MicrophoneRecorder } from './MicRecord.jsx';
 
-
 const ProjectView = () => {
 
   const [listOfTracks, setListOfTracks] = useState([]);
   const [listPlayers, setListPlayers] = useState({});
+  // const [maxDuration, setMaxDuration] = useState(0);
 
   const [maxTracks, setMax] = useState(1);
   const [underMax, setUnderMax] = useState(true);
@@ -25,7 +26,7 @@ const ProjectView = () => {
       // 'https://s3-us-west-1.amazonaws.com/leesamples/samples/Rhythmics/60+bpm/Ping+Pong+Ping.mp3',
       // 'https://dl.dropboxusercontent.com/s/w303ydczmgrkfh8/New%20Recording%2075.m4a?dl=0',
       // 'https://tonejs.github.io/audio/berklee/gong_1.mp3',
-      // 'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
+      'https://dl.dropboxusercontent.com/s/1emccgj2kebg72a/Transient.m4a?dl=0',
       // 'https://dl.dropboxusercontent.com/s/c9aome2s0wr4ym7/Cymatics%20-%2021%20Inch%20Ride%20-%20Velocity%204.wav?dl=0',
       // 'https://dl.dropboxusercontent.com/s/3e7cinfd5ib9u5d/one%20two.m4a?dl=0',
       'https://dl.dropboxusercontent.com/s/d539eig06ioc35s/one%20two.webm?dl=0',
@@ -41,7 +42,7 @@ const ProjectView = () => {
     const file = event.target.files[0];
     const audio = new Audio();
     audio.src = URL.createObjectURL(file);
-    audio.onloadedmetadata = function() {
+    audio.onloadedmetadata = function () {
       const duration = audio.duration;
       if (duration > 30) {
         alert('Audio file must be no longer than 30 seconds.');
@@ -96,6 +97,8 @@ const ProjectView = () => {
   const handleRecordRender = () => {
     console.log('Render ALL tracks into Song');
 
+    var maxDuration = 0;
+
     Tone.loaded().then(() => {
 
       // Create a Gain node to use as the output destination
@@ -115,6 +118,14 @@ const ProjectView = () => {
         const playerEach = listPlayers[key];
         playerEach.start(); // Deleting this stops all sound
         playerEach.playbackRate = playerEach["transpose"];
+
+        const durationMilliseconds = Math.round(playerEach.buffer.duration * 1000 / playerEach["transpose"]);
+        if (durationMilliseconds > maxDuration) {
+          maxDuration = durationMilliseconds;
+
+          console.log("set max duration: ", maxDuration);
+        }
+
       }
 
       setTimeout(async () => {
@@ -127,13 +138,29 @@ const ProjectView = () => {
         //   playerEach.disconnect();
         // }
 
-        // download the recording by creating an anchor element and blob url
-        const url = URL.createObjectURL(recording);
-        const anchor = document.createElement("a");
-        anchor.download = "recording.webm";
-        anchor.href = url;
+        // convert the blob to a Buffer
+        const buffer = await recording.arrayBuffer();
+
+        // convert the blob to an AudioBuffer
+        const audioContext = new AudioContext();
+        const audioBuffer = await audioContext.decodeAudioData(buffer);
+
+        const wavData = audioBufferToWav(audioBuffer);
+
+        // Create a Blob from the WAV data
+        const blob = new Blob([new DataView(wavData)], { type: 'audio/wav' });
+
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
+
+        // Create an anchor tag and allows for download of wav right now
+        const anchor = document.createElement('a');
+        anchor.setAttribute('href', url);
+        anchor.setAttribute('download', 'audio.wav');
         anchor.click();
-      }, 4000);
+
+
+      }, maxDuration);
     });
   };
 
@@ -162,7 +189,7 @@ const ProjectView = () => {
       <form>
         {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
       </form>
-      <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax}/>
+      <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax} />
     </div>
 
   );
