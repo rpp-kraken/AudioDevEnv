@@ -32,6 +32,7 @@ const ProjectView = () => {
       // 'https://dl.dropboxusercontent.com/s/d539eig06ioc35s/one%20two.webm?dl=0',
     ];
 
+    setMax(trackUrlSources.length);
     setListOfTracks(trackUrlSources);
   }, []);
 
@@ -196,12 +197,16 @@ const ProjectView = () => {
         {listOfTracks.map((urlTrack, i) => { return <FXPanel trackUrl={urlTrack} index={i} key={i} handleAddPlayer={handleAddPlayer} handleDelete={handleDelete} /> })}
       </div>
       <h4 className="smalltitle">
-        ## Upload File
+        Upload File
       </h4>
       <form>
         {underMax && <input type="file" accept="audio/*" onChange={handleUploadAudio} />}
       </form>
+      <h4 className="smalltitle">
+        Record Audio
+      </h4>
       {underMax && <MicrophoneRecorder setListOfTracks={setListOfTracks} setMax={setMax} maxTracks={maxTracks} setUnderMax={setUnderMax} underMax={underMax} />}
+      <br /><br />
       <button className="outline-button-button" onClick={handleDelete}>
         Delete All Tracks
       </button>
